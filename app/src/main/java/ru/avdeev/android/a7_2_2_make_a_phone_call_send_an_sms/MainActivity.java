@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.text.SpannableStringBuilder;
 import android.text.style.RelativeSizeSpan;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText collEditText;
     private EditText sendEditText;
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE=11;
+    private static final int MY_PERMISSIONS_REQUEST_SEND_MESSAGE=12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +57,18 @@ public class MainActivity extends AppCompatActivity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (sendEditText.getText().toString().length()>0 && collEditText.toString().length()>0) {
-                    sendTextMessage(collEditText.getText().toString(), sendEditText.getText().toString());
+                if (sendEditText.getText().toString().length()>0 && collEditText.getText().toString().length()==12) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.SEND_SMS},MY_PERMISSIONS_REQUEST_SEND_MESSAGE);
+                    } else {
+                        SmsManager smgr = SmsManager.getDefault();
+                        smgr.sendTextMessage(collEditText.getText().toString(), null, sendEditText.getText().toString(), null, null);
+                    }
                 } else {
                     showMyMessage(R.string.There_is_no_text_to_send, MainActivity.this);
                 }
             }
         });
-    }
-
-    private void sendTextMessage(String phoneNumber, String message) {
-
     }
 
     public static void showMyMessage(int massage, Context context) {

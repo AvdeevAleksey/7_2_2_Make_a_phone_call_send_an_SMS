@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.avdeev.android.a7_2_2_make_a_phone_call_send_an_sms">
     <uses-permission android:name = "android.permission.CALL_PHONE"/>
+    <uses-permission android:name = "android.permission.SEND_SMS"/>
 
     <application
         android:allowBackup="true"
