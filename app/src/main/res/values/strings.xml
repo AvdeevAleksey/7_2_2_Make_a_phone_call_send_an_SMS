@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">7_2_2_Make_a_phone_call_send_an_SMS</string>
+    <string name="coll_number">Введите номер телефона</string>
+    <string name="sending_message">Напишите сообщение</string>
+    <string name="coll">Позвонить</string>
+    <string name="send">Отправить</string>
 </resources>
