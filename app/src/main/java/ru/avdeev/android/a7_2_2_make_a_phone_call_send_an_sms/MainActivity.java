@@ -1,5 +1,6 @@
 package ru.avdeev.android.a7_2_2_make_a_phone_call_send_an_sms;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -38,16 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (collEditText.getText().toString().length()==12) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED) {
-                        // Разрешение не получено
-                        // Делаем запрос на добавление разрешения звонка
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CALL_PHONE},MY_PERMISSIONS_REQUEST_CALL_PHONE);
-                    } else {
-                        // Разрешение уже получено
-                        Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + collEditText.getText().toString()));
-                        // Звоним
-                        startActivity(intent);
-                    }
+
                 } else {
                     showMyMessage(R.string.No_phone_number, MainActivity.this);
                 }
@@ -58,12 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (sendEditText.getText().toString().length()>0 && collEditText.getText().toString().length()==12) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.SEND_SMS},MY_PERMISSIONS_REQUEST_SEND_MESSAGE);
-                    } else {
-                        SmsManager smgr = SmsManager.getDefault();
-                        smgr.sendTextMessage(collEditText.getText().toString(), null, sendEditText.getText().toString(), null, null);
-                    }
+                    sendSmsByNumber();
                 } else {
                     showMyMessage(R.string.There_is_no_text_to_send, MainActivity.this);
                 }
@@ -78,5 +65,56 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(context, biggerText, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case MY_PERMISSIONS_REQUEST_CALL_PHONE: {
+                // Проверяем результат запроса на право позвонить
+                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+                    // Разрешение получено, осуществляем звонок
+                    callByNumber();
+                } else {
+                    // Разрешение не дано. Закрываем приложение
+                    finish();
+                }
+            }
+            case MY_PERMISSIONS_REQUEST_SEND_MESSAGE: {
+                // Проверяем результат запроса на право отправить sms
+                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+                    // Разрешение получено, осуществляем звонок
+                    sendSmsByNumber();
+                } else {
+                    // Разрешение не дано. Закрываем приложение
+                    finish();
+                }
+            }
+        }
+    }
+
+    private void sendSmsByNumber() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.SEND_SMS},MY_PERMISSIONS_REQUEST_SEND_MESSAGE);
+        } else {
+            // Разрешение уже получено
+            SmsManager smgr = SmsManager.getDefault();
+            // Отправляем sms
+            smgr.sendTextMessage(collEditText.getText().toString(), null, sendEditText.getText().toString(), null, null);
+        }
+
+    }
+
+    private void callByNumber() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED) {
+            // Разрешение не получено
+            // Делаем запрос на добавление разрешения звонка
+            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CALL_PHONE},MY_PERMISSIONS_REQUEST_CALL_PHONE);
+        } else {
+            // Разрешение уже получено
+            Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + collEditText.getText().toString()));
+            // Звоним
+            startActivity(intent);
+        }
     }
 }
