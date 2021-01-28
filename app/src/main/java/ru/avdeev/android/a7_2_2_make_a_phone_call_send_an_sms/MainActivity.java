@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (collEditText.getText().toString().length()==12) {
-
+                    collByNumber();
                 } else {
                     showMyMessage(R.string.No_phone_number, MainActivity.this);
                 }
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 // Проверяем результат запроса на право позвонить
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
                     // Разрешение получено, осуществляем звонок
-                    callByNumber();
+                    collByNumber();
                 } else {
                     // Разрешение не дано. Закрываем приложение
                     finish();
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void callByNumber() {
+    private void collByNumber() {
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED) {
             // Разрешение не получено
             // Делаем запрос на добавление разрешения звонка
